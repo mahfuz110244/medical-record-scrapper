@@ -2,6 +2,7 @@ Medical Record Scrapper
 Master Branch is the default branch for this Code base.
 First clone this code base only then follow the following instrucitons.
 
+
 1. Clone from git source:
 ```
 git clone https://github.com/mahfuz110244/medical-record-scrapper.git
@@ -33,8 +34,13 @@ source bin/activate
 pip3 install -r requirements.txt
 ```
 
+7. Copy sample.env as .env and changes accordingly
+```
+cp sample.env .env
+```
 
-7. Finally run the scrap file
+
+8. Finally run the scrap file
 ```
 python3 scrap.py
 python3 scrap_chaldal.py

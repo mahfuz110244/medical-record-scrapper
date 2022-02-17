@@ -1,12 +1,15 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
+from send_email import send_email_with_atttachement
 
 def chaldal_scrap():
 	current_datetime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 	filename = 'chaldal.xlsx'
-	save_filename = "chaldal_updated_" + current_datetime + ".xlsx"
+	save_filename = "file/chaldal_updated_" + current_datetime + ".xlsx"
 	writter = pd.ExcelWriter(path = save_filename, engine = 'openpyxl')
 
 	dframe = pd.read_excel(filename, sheet_name=None)
@@ -16,22 +19,22 @@ def chaldal_scrap():
 			discount_price = 0
 			actual_price = 0
 			url = dframe[sheet]['URL'][i]
-			try:
-				page = requests.get(url)
-				soup = BeautifulSoup(page.content, 'html.parser')
-				discount_price_col = soup.findAll('div', {'class':'discountedPriceSection'})
-				for col in discount_price_col:
-					discount_price = col.text.strip().split(' ')[0][1:-3]
+			# try:
+			# 	page = requests.get(url)
+			# 	soup = BeautifulSoup(page.content, 'html.parser')
+			# 	discount_price_col = soup.findAll('div', {'class':'discountedPriceSection'})
+			# 	for col in discount_price_col:
+			# 		discount_price = col.text.strip().split(' ')[0][1:-3]
 
-				actual_price_col = soup.findAll('div', {'class':'fullPrice'})
-				for col in actual_price_col:
-					actual_price = col.text.strip().split(' ')[2]
-				if actual_price == 0:
-					actual_price_col = soup.findAll('div', {'class':'price'})
-					for col in actual_price_col:
-						actual_price = col.text.strip()[1:]
-			except Exception as e:
-				print(f"Error in url: {url}, error: {e}")
+			# 	actual_price_col = soup.findAll('div', {'class':'fullPrice'})
+			# 	for col in actual_price_col:
+			# 		actual_price = col.text.strip().split(' ')[2]
+			# 	if actual_price == 0:
+			# 		actual_price_col = soup.findAll('div', {'class':'price'})
+			# 		for col in actual_price_col:
+			# 			actual_price = col.text.strip()[1:]
+			# except Exception as e:
+			# 	print(f"Error in url: {url}, error: {e}")
 			data = {
 				'URL': url,
 				'Product_Name': dframe[sheet]['Product_Name'][i],
@@ -46,6 +49,7 @@ def chaldal_scrap():
 		docData.to_excel(writter, sheet_name=sheet)
 	writter.save()
 	writter.close()
+	return save_filename
 
 
 def chaldal_scrap_single_url():
@@ -69,6 +73,9 @@ def chaldal_scrap_single_url():
 	except Exception as e:
 		print(f"Error in url: {url}, error: {e}")
 	print(actual_price, discount_price)
+
+
 if __name__ == "__main__":
-	chaldal_scrap()
+	filename = chaldal_scrap()
+	send_email_with_atttachement(filename)
 	# chaldal_scrap_single_url()

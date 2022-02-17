@@ -1,15 +1,18 @@
-import requests
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+import requests, os
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
 import time
 import schedule
+from send_email import send_email_with_atttachement
 
 def func_scrap_chaldal():
     current_datetime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
     filename = 'chaldal.xlsx'
-    save_filename = "chaldal_updated_" + current_datetime + ".xlsx"
-    writter = pd.ExcelWriter(path = save_filename, engine = 'openpyxl')
+    output_filename = "file/chaldal_updated_" + current_datetime + ".xlsx"
+    writter = pd.ExcelWriter(path = output_filename, engine = 'openpyxl')
 
     dframe = pd.read_excel(filename, sheet_name=None)
     for sheet in dframe:
@@ -48,16 +51,18 @@ def func_scrap_chaldal():
         docData.to_excel(writter, sheet_name=sheet)
     writter.save()
     writter.close()
+    return output_filename
 
 def runs_my_script():
-    func_scrap_chaldal()
+    filename = func_scrap_chaldal()
+    send_email_with_atttachement(filename)
     print(f"{datetime.now()} - Script executed successfully")
 
 if __name__ == "__main__":
     print(f"start to run chaldal srcipt at {datetime.now()}")
-    # schedule.every().hour.do(runs_my_script) # sets the function to run once per hour
+    schedule.every().hour.do(runs_my_script) # sets the function to run once per hour
     # schedule.every(10).seconds.do(runs_my_script) # sets the function to run per 10 second
-    schedule.every(10).minutes.do(runs_my_script) # sets the function to run per 10 minutes  
+    # schedule.every(10).minutes.do(runs_my_script) # sets the function to run per 10 minutes  
     while True:  # loops and runs the scheduled job indefinitely 
         schedule.run_pending()
         time.sleep(1)
