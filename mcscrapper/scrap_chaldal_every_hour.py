@@ -28,6 +28,10 @@ def func_scrap_chaldal():
                 actual_price_col = soup.findAll('div', {'class':'fullPrice'})
                 for col in actual_price_col:
                     actual_price = col.text.strip().split(' ')[2]
+                if actual_price == 0:
+                    actual_price_col = soup.findAll('div', {'class':'price'})
+                    for col in actual_price_col:
+                        actual_price = col.text.strip()[1:]
             except Exception as e:
                 print(f"Error in url: {url}, error: {e}")
             data = {
