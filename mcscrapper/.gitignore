@@ -69,3 +69,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#Ignore all xlsx files
+*.xlsx
+
+#Ignore all pdf file
+*.pdf
+
+venv
+.env
+env
